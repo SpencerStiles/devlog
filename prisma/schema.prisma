@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Author {
+  id        String   @id @default(cuid())
+  name      String
+  username  String   @unique
+  bio       String   @default("")
+  avatarUrl String   @default("")
+  website   String   @default("")
+  github    String   @default("")
+  createdAt DateTime @default(now())
+
+  posts     Post[]
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  content     String
+  excerpt     String   @default("")
+  published   Boolean  @default(false)
+  pinned      Boolean  @default(false)
+  views       Int      @default(0)
+  likes       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId    String
+  author      Author   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  postTags    PostTag[]
+  postLikes   PostLike[]
+
+  @@index([slug])
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([published])
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  color    String    @default("#8b5cf6")
+
+  postTags PostTag[]
+
+  @@index([name])
+}
+
+model PostTag {
+  postId String
+  tagId  String
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
+// NOTE: run `npx prisma migrate dev` after adding this model
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  token     String   // anonymous fingerprint (IP hash or browser UUID)
+  createdAt DateTime @default(now())
+
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, token])
+}

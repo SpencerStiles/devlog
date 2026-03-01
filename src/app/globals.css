@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+}
+
+/* Syntax highlighting - GitHub Dark theme */
+.hljs {
+  background: #0d1117 !important;
+  color: #c9d1d9 !important;
+  border-radius: 0.5rem;
+  padding: 1rem !important;
+  overflow-x: auto;
+}
+
+.hljs-keyword { color: #ff7b72; }
+.hljs-string { color: #a5d6ff; }
+.hljs-comment { color: #8b949e; }
+.hljs-function { color: #d2a8ff; }
+.hljs-number { color: #79c0ff; }
+.hljs-title { color: #d2a8ff; }
+.hljs-built_in { color: #ffa657; }
+.hljs-attr { color: #79c0ff; }
+.hljs-params { color: #c9d1d9; }
