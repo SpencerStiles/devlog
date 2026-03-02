@@ -3,6 +3,7 @@
 import { prisma } from './db';
 import { uniqueSlug } from './slugify';
 import { revalidatePath } from 'next/cache';
+import { logger } from './logger';
 
 // ──────────────────────────────────────────────
 // Posts
@@ -40,7 +41,7 @@ export async function createPost(data: {
     revalidatePath(`/posts/${slug}`);
     return post;
   } catch (err) {
-    console.error('[createPost]', err);
+    logger.error('Failed in createPost', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Operation failed');
   }
 }
@@ -76,7 +77,7 @@ export async function updatePost(
     revalidatePath(`/posts/${post.slug}`);
     return post;
   } catch (err) {
-    console.error('[updatePost]', err);
+    logger.error('Failed in updatePost', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Operation failed');
   }
 }
@@ -87,7 +88,7 @@ export async function deletePost(id: string) {
     revalidatePath('/');
     revalidatePath(`/posts/${post.slug}`);
   } catch (err) {
-    console.error('[deletePost]', err);
+    logger.error('Failed in deletePost', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Operation failed');
   }
 }
@@ -102,7 +103,7 @@ export async function getPost(slug: string) {
       },
     });
   } catch (err) {
-    console.error('[getPost]', err);
+    logger.error('Failed in getPost', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Operation failed');
   }
 }
@@ -114,7 +115,7 @@ export async function incrementPostView(slug: string) {
       data: { views: { increment: 1 } },
     });
   } catch (err) {
-    console.error('[incrementPostView]', err);
+    logger.error('Failed in incrementPostView', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Operation failed');
   }
 }
@@ -145,6 +146,7 @@ export async function likePost(slug: string, token: string) {
     if (isUniqueConstraint) {
       return { success: false, alreadyLiked: true };
     }
+    logger.error('Failed in likePost', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw err;
   }
 }
@@ -185,7 +187,7 @@ export async function listPosts(options?: {
 
     return { posts, total };
   } catch (err) {
-    console.error('[listPosts]', err);
+    logger.error('Failed in listPosts', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Operation failed');
   }
 }
@@ -231,7 +233,7 @@ export async function listTags() {
       orderBy: { name: 'asc' },
     });
   } catch (err) {
-    console.error('[listTags]', err);
+    logger.error('Failed in listTags', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Operation failed');
   }
 }
@@ -258,7 +260,7 @@ export async function getOrCreateAuthor(data: {
       },
     });
   } catch (err) {
-    console.error('[getOrCreateAuthor]', err);
+    logger.error('Failed in getOrCreateAuthor', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Operation failed');
   }
 }
@@ -276,7 +278,7 @@ export async function getAuthor(username: string) {
       },
     });
   } catch (err) {
-    console.error('[getAuthor]', err);
+    logger.error('Failed in getAuthor', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Operation failed');
   }
 }
@@ -301,7 +303,7 @@ export async function getStats() {
       totalLikes: totalLikes._sum.likes ?? 0,
     };
   } catch (err) {
-    console.error('[getStats]', err);
+    logger.error('Failed in getStats', { error: err instanceof Error ? err.message : 'Unknown error' });
     throw new Error(err instanceof Error ? err.message : 'Operation failed');
   }
 }
